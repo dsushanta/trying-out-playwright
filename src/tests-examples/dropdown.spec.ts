@@ -17,8 +17,15 @@ test('should contain a particular state', async ({ page }) => {
 
 test('should contain a particular state 2', async ({ page }) => {
     await page.goto(url);
-    let allStates = await page.$('#state').;
-    let allStateOptions = await allStates?.$$("option");
-    let result = allStateOptions.find( async option => await option.textContent() === 'Jharkhand');
+    await page.waitForSelector('#state');
+    let stateDropDown = await page.$('#state');
+    let allStateOptions = await stateDropDown!.$$("option");
+    let allStateNames = await Promise.all(allStateOptions.map(async option => await option.textContent()))
+    let result = allStateNames.find(name => name?.trim()==='Jharkhand');
     expect(result).toBeTruthy();
+});
+
+test('should select multiple options', async ({ page }) => {
+    await page.goto(url);
+    await page.locator('#hobbies').selectOption(['Playing', 'Swimming']);
 });

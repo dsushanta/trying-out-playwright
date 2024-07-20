@@ -1,0 +1,14 @@
+framework: playwright
+userName: sushantadasgupta1
+accessKey: Nyi3CJ5CNsfVrqCshGky
+platforms:
+  - os: Windows
+    osVersion: 11
+    browserName: chrome
+    browserVersion: latest
+browserstackLocal: false
+buildName: trying-out-playwright
+buildIdentifier: ${BUILD_NUMBER}
+projectName: trying-out-playwright
+debug: true
+consoleLogs: verbose

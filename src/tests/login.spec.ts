@@ -1,28 +1,36 @@
-import { expect, test } from "@playwright/test";
+// import {test} from '../utils/percy.helper';
+import { LoginPage } from '../pages/loginPage';
+import { HomePage } from '../pages/homePage';
+// import percySnapshot from "@percy/playwright";
+import {test, expect} from "@playwright/test";
+import percySnapshot from "@percy/playwright";
 
-const url = 'https://opensource-demo.orangehrmlive.com/web/index.php/auth/login'
+const url = 'https://freelance-learn-automation.vercel.app/login';
 
-test("Login with valid credentials", async ({page}) => {
-    await page.goto(url);
-    await page.getByPlaceholder('Username').type('Admin', {delay:200});
-    await page.locator("input[name='password']").type('admin123', {delay:200});
-    await page.locator("//button[@type='submit']").click();
+test.beforeEach(async ({ page }) => {
+    await page.goto(url, {waitUntil: "networkidle"});
+})
 
-    await expect(page).toHaveURL(/dashboard/);
+test('should be able to login', async ({ page }) => {
 
-    await page.getByAltText('profile picture').click();
-    await page.getByText('Logout').click();
+    const loginPage = new LoginPage(page);
+    const homePage = new HomePage(page);
 
-    await expect(page).toHaveURL(/login/);
-});
+    // await loginPage.loginToApplication('admin@email.com', 'admin@123')
+    //     .then(() => homePage.getManageOption())
+    //     .then(manageOption => expect(manageOption).toBeVisible())
+    //     .then(() => homePage.logoutFromApplication())
+    //     .then(() => expect(loginPage.getSignInHeader()).toBeVisible());
 
-test("Verify error message", async ({page}) => {
-    await page.goto(url);
-    await page.getByPlaceholder('Username').type('Admin', {delay:200});
-    await page.locator("input[name='password']").type('admin1234', {delay:200});
-    await page.locator("//button[@type='submit']").click();
-    const errorMessage = await page.locator("//p[contains(@class,'alert-content-text')]").textContent();
+    // await loginPage.loginToApplication('admin@email.com', 'admin@123');
 
-    expect(errorMessage?.includes("Invalid")).toBeTruthy();
-    expect(errorMessage === 'Invalid credentials').toBeTruthy();
-});
+    await loginPage.enterCredentials('admin@email.com', 'admin@123');
+    await percySnapshot(page, 'login', { percyCSS: `input#email1 { visibility: hidden; }`});
+    await loginPage.submitCredentials();
+    // await percySnapshot(page, 'home');
+    const manageOption = homePage.getManageOption();
+    await percySnapshot(page,'home');
+    await expect(manageOption).toBeVisible();
+    await homePage.logoutFromApplication();
+    await expect(loginPage.getSignInHeader()).toBeVisible();
+})

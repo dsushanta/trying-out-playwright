@@ -1,24 +1,22 @@
 import { Page } from "@playwright/test";
 
-class BasePage {
+export class BasePage {
     constructor(protected page: Page) {
     }
 
-    async navigateTo(url: string) {
+    public async navigateTo(url: string) {
         await this.page.goto(url);
     }
 
-    async click(locator: string) {
+    public async click(locator: string) {
         await this.page.click(locator);
     }
 
-    async type(locator: string, inputText: string) {
+    public async type(locator: string, inputText: string) {
         await this.page.fill(locator, inputText);
     }
 
-    async getText(locator: string) {
+    public async getText(locator: string) {
         return this.page.textContent(locator);
     }
 }
-
-export { BasePage }
