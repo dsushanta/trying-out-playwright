@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test",
-    "test-with-visual": "npx percy exec -- npx playwright test"
+    "test": "npx playwright test --grep @smoke",
+    "test-with-visual": "npx percy exec -- npx playwright test --grep @smoke --headed",
+    "test-bs": "npx browserstack-node-sdk playwright test --grep @smoke",
+    "test-bs-with-visual": "npx percy exec -- npx browserstack-node-sdk playwright test --grep @smoke"
   },
   "repository": {
     "type": "git",

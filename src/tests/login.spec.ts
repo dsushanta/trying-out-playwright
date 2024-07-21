@@ -11,7 +11,10 @@ test.beforeEach(async ({ page }) => {
     await page.goto(url, {waitUntil: "networkidle"});
 })
 
-test('should be able to login', async ({ page }) => {
+test(
+    'should be able to login',
+    {tag: ['@smoke', '@regression']},
+    async ({ page }) => {
 
     const loginPage = new LoginPage(page);
     const homePage = new HomePage(page);
@@ -27,10 +30,22 @@ test('should be able to login', async ({ page }) => {
     await loginPage.enterCredentials('admin@email.com', 'admin@123');
     await percySnapshot(page, 'login', { percyCSS: `input#email1 { visibility: hidden; }`});
     await loginPage.submitCredentials();
-    // await percySnapshot(page, 'home');
+    await percySnapshot(page, 'home');
+    const manageOption = homePage.getManageOption();
+    await expect(manageOption).toBeVisible();
+});
+
+test('should be able to logout',
+    {tag: ['@regression']},
+    async ({ page }) => {
+
+    const loginPage = new LoginPage(page);
+    const homePage = new HomePage(page);
+
+    await loginPage.loginToApplication('admin@email.com', 'admin@123');
     const manageOption = homePage.getManageOption();
     await percySnapshot(page,'home');
     await expect(manageOption).toBeVisible();
     await homePage.logoutFromApplication();
     await expect(loginPage.getSignInHeader()).toBeVisible();
-})
+});

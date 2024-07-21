@@ -2,8 +2,8 @@ framework: playwright
 userName: sushantadasgupta1
 accessKey: Nyi3CJ5CNsfVrqCshGky
 platforms:
-  - os: Windows
-    osVersion: 11
+  - os: OS X
+    osVersion: Sonoma
     browserName: chrome
     browserVersion: latest
 browserstackLocal: false

@@ -14,6 +14,11 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+    - name: 'BrowserStack Env Setup'
+      uses: browserstack/github-actions/setup-env@master
+      with:
+        username: ${{ secrets.BROWSERSTACK_USERNAME }}
+        access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
@@ -25,7 +30,7 @@ jobs:
     - name: Run Playwright tests
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      run: npm run test-with-visual
+      run: npm run test-bs-with-visual
     - name: Upload Playwright report to GitHub Pages
       if: always()
       uses: peaceiris/actions-gh-pages@v3
