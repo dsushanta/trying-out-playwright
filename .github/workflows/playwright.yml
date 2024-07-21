@@ -5,6 +5,11 @@ on:
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
+    inputs:
+      category:
+        description: 'Test category to run (smoke, regression, e2e etc.)'
+        required: false
+        default: 'smoke'
 
 permissions:
   contents: write
@@ -13,8 +18,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      TEST_CATEGORY: smoke
+
     steps:
     - name: 'BrowserStack Env Setup'
       uses: browserstack/github-actions/setup-env@master
@@ -32,6 +36,7 @@ jobs:
     - name: Run Playwright tests
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+        TEST_CATEGORY: ${{ github.event.inputs.category || 'smoke' }}
       run: npx percy exec -- npx browserstack-node-sdk playwright test --grep @${{ env.TEST_CATEGORY }}
     - name: Upload Playwright report to GitHub Pages
       if: always()
