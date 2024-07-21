@@ -13,6 +13,8 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      TEST_CATEGORY: smoke
     steps:
     - name: 'BrowserStack Env Setup'
       uses: browserstack/github-actions/setup-env@master
@@ -30,7 +32,7 @@ jobs:
     - name: Run Playwright tests
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      run: npm run test-bs-with-visual
+      run: npx percy exec -- npx browserstack-node-sdk playwright test --grep @${{ env.TEST_CATEGORY }}
     - name: Upload Playwright report to GitHub Pages
       if: always()
       uses: peaceiris/actions-gh-pages@v3
