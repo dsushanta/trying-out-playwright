@@ -7,13 +7,15 @@ export class LoginPage extends BasePage{
     private readonly userName: string;
     private readonly password: string;
     private readonly loginButton: string;
+    private readonly errorMessage: string;
 
     constructor(page: Page) {
         super(page);
-        this.header = "//h2[text()='Sign In']"
-        this.userName = '#email1';
-        this.password = '#password1';
-        this.loginButton = "//button[text()='Sign in']";
+        this.header = ".login_logo"
+        this.userName = '#user-name';
+        this.password = '#password';
+        this.loginButton = "#login-button";
+        this.errorMessage = "//div[@class='error-message-container error']/h3";
     }
 
     public enterCredentials = async (userName: string, password: string)=> {
@@ -33,5 +35,9 @@ export class LoginPage extends BasePage{
 
     public getSignInHeader = () => {
         return this.page.locator(this.header);
+    }
+
+    getErrorMessage() {
+        return this.page.locator(this.errorMessage).textContent();
     }
 }

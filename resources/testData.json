@@ -1,0 +1,32 @@
+{
+  "login": [
+    {
+      "id": 1,
+      "username": "standard_user",
+      "password": "secret_sauce",
+      "status": "success",
+      "errorMessage": ""
+    },
+    {
+      "id": 2,
+      "username": "locked_out_user",
+      "password": "secret_sauce",
+      "status": "failure",
+      "errorMessage": "Sorry, this user has been locked out."
+    },
+    {
+      "id": 3,
+      "username": "standard_user1",
+      "password": "secret_sauce",
+      "status": "failure",
+      "errorMessage": "Username and password do not match any user in this service"
+    },
+    {
+      "id": 4,
+      "username": "standard_user",
+      "password": "secret_sauce1",
+      "status": "failure",
+      "errorMessage": "Username and password do not match any user in this service"
+    }
+  ]
+}

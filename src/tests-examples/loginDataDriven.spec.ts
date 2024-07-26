@@ -1,6 +1,6 @@
 import {expect, test} from "@playwright/test";
 
-import testData from '../../resource/testData.json';
+import testData from '../../resources/testData.json';
 
 const url = 'https://freelance-learn-automation.vercel.app/login'
 const jsonData = JSON.parse(JSON.stringify(testData));

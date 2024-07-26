@@ -1,11 +1,15 @@
-// import {test} from '../utils/percy.helper';
-import { LoginPage } from '../pages/loginPage';
-import { HomePage } from '../pages/homePage';
-// import percySnapshot from "@percy/playwright";
-import {test, expect} from "@playwright/test";
+import {LoginPage} from '../pages/loginPage';
+import {HomePage} from '../pages/homePage';
+import {expect, test} from "../fixtures/loginFixtures";
 import percySnapshot from "@percy/playwright";
+import path from "node:path";
+import fs from "node:fs";
 
-const url = 'https://freelance-learn-automation.vercel.app/login';
+const appConfigPath = path.resolve(__dirname, '../../resources/appConfig.json');
+const appConfig = JSON.parse(fs.readFileSync(appConfigPath, 'utf-8'));
+const url = appConfig.baseUrl;
+const testDataPath = path.resolve(__dirname, '../../resources/testData.json');
+const testData: { login: LoginTestData[] } = JSON.parse(fs.readFileSync(testDataPath, 'utf-8'));
 
 test.beforeEach(async ({ page }) => {
     await page.goto(url, {waitUntil: "networkidle"});
@@ -19,33 +23,33 @@ test(
     const loginPage = new LoginPage(page);
     const homePage = new HomePage(page);
 
-    // await loginPage.loginToApplication('admin@email.com', 'admin@123')
-    //     .then(() => homePage.getManageOption())
-    //     .then(manageOption => expect(manageOption).toBeVisible())
-    //     .then(() => homePage.logoutFromApplication())
-    //     .then(() => expect(loginPage.getSignInHeader()).toBeVisible());
+    const username = appConfig.username;
+    const password = appConfig.password;
 
-    // await loginPage.loginToApplication('admin@email.com', 'admin@123');
-
-    await loginPage.enterCredentials('admin@email.com', 'admin@123');
-    await percySnapshot(page, 'login', { percyCSS: `input#email1 { visibility: hidden; }`});
+    await loginPage.enterCredentials(username, password);
+    await percySnapshot(page, 'login', { percyCSS: `#user-name { visibility: hidden; }`});
     await loginPage.submitCredentials();
     await percySnapshot(page, 'home');
-    const manageOption = homePage.getManageOption();
-    await expect(manageOption).toBeVisible();
+    const shoppingCartLink = homePage.getShoppingCartLink();
+    await expect(shoppingCartLink).toBeVisible();
 });
 
-test('should be able to logout',
-    {tag: ['@regression']},
-    async ({ page }) => {
+test.describe.parallel('Login Tests with all data sets', () => {
+    testData.login.forEach(({ id, username, password, status, errorMessage}) => {
+        test(`should handle login for ${id}`,
+            {tag: ['@regression', '@negative']},
+            async ({ page }) => {
+            const loginPage = new LoginPage(page);
+            const homePage = new HomePage(page);
+            await loginPage.loginToApplication(username, password);
 
-    const loginPage = new LoginPage(page);
-    const homePage = new HomePage(page);
-
-    await loginPage.loginToApplication('admin@email.com', 'admin@123');
-    const manageOption = homePage.getManageOption();
-    await percySnapshot(page,'home');
-    await expect(manageOption).toBeVisible();
-    await homePage.logoutFromApplication();
-    await expect(loginPage.getSignInHeader()).toBeVisible();
+            if(status === 'success') {
+                const shoppingCartLink = homePage.getShoppingCartLink();
+                await expect(shoppingCartLink).toBeVisible();
+            } else {
+                const actualErrorMessage = await loginPage.getErrorMessage();
+                expect(actualErrorMessage).toContain(errorMessage);
+            }
+        });
+    });
 });
